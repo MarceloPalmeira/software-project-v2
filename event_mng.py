@@ -35,3 +35,8 @@ class EventMng:
                 self.events.remove(event)
                 return {"message": f"Evento {event_id} removido com sucesso"}
         return {"error": "Event not found"}
+
+    def add_feedback(self, event_id, feedback):
+        event = self.get_event_by_id(event_id)
+        if event:
+            event.feedbacks.append(feedback)

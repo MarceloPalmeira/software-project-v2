@@ -10,3 +10,8 @@ class BudgetandFinancialMng:
 
     def get_budget(self, event):
         return self.budgets.get(event.id, 0)
+    
+    def set_budget(self, event, new_budget):
+        self.budgets[event.id] = new_budget
+        event.budget = new_budget
+

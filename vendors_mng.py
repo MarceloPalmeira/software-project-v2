@@ -10,3 +10,18 @@ class VendorsMng:
 
     def list_vendors(self, event):
         return self.vendors.get(event.id, [])
+    
+    def edit_vendor(self, event, old_name, new_name, new_services):
+        vendors_list = self.vendors.get(event.id, [])
+        for vendor in vendors_list:
+            if vendor["name"] == old_name:
+                vendor["name"] = new_name
+                vendor["services"] = new_services
+                for v in event.vendors:
+                    if v["name"] == old_name:
+                        v["name"] = new_name
+                        v["services"] = new_services
+                        break
+                return True
+        return False
+
