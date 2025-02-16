@@ -89,15 +89,12 @@ Manages the financial aspects of events:
 
 ### **Vendor Management**
 - **Register a Vendor**: Adds a vendor with their products/services.  
-- **List Vendors**: Displays all registered vendors.  
 
 ### **Feedback & Surveys**
 - **Submit Feedback**: Allows attendees to leave feedback for an event.  
-- **View Feedback**: Lists all feedback received for an event.  
 
 ### **Budget & Financial Management**
 - **Update Budget**: Modifies the budget for an event.  
-- **View Budget**: Retrieves the current budget of an event.  
 
 ---
 
