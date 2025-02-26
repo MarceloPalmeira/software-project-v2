@@ -3,9 +3,9 @@ import requests
 BASE_URL = "http://127.0.0.1:5000"
 
 def create_event():
-    name = input("Event name: ")
-    date = input("Event date (DD-MM-YYYY): ")
-    budget = input("Initial budget: ")
+    name = input("Event Name: ")
+    date = input("Event Date (DD-MM-YYYY): ")
+    budget = input("Initial Budget: ")
     response = requests.post(f"{BASE_URL}/create_event", data={"name": name, "date": date, "budget": budget})
     print(response.json())
 
@@ -20,7 +20,7 @@ def get_events():
 
 def register_attendee():
     event_id = input("Event ID: ")
-    name = input("Participant name: ")
+    name = input("Participant Name: ")
     response = requests.post(f"{BASE_URL}/register_participant", data={"name": name, "event_id": event_id})
     print(response.json())
 
@@ -30,15 +30,15 @@ def get_attendees():
 
 def register_speaker():
     event_id = input("Event ID: ")
-    name = input("Speaker name: ")
+    name = input("Speaker Name: ")
     description = input("Description: ")
     response = requests.post(f"{BASE_URL}/register_speaker", data={"name": name, "description": description, "event_id": event_id})
     print(response.json())
 
 def register_vendor():
     event_id = input("Event ID: ")
-    name = input("Vendor name: ")
-    services = input("Offered services: ")
+    name = input("Vendor Name: ")
+    services = input("Offered Services: ")
     response = requests.post(f"{BASE_URL}/register_vendor", data={"name": name, "services": services, "event_id": event_id})
     print(response.json())
 
@@ -56,9 +56,9 @@ def add_feedback():
 
 def edit_event():
     event_id = input("Event ID to edit: ")
-    new_name = input("New event name: ")
-    new_date = input("New event date (YYYY-MM-DD): ")
-    new_budget = input("New budget: ")
+    new_name = input("New Event Name: ")
+    new_date = input("New Event Date (DD-MM-YYYY): ")
+    new_budget = input("New Budget: ")
     response = requests.post(f"{BASE_URL}/edit_event", data={"event_id": event_id, "name": new_name, "date": new_date, "budget": new_budget})
     print(response.json())
 
@@ -74,9 +74,9 @@ def list_speakers():
 
 def edit_speaker():
     event_id = input("Event ID: ")
-    old_name = input("Nome atual do speaker: ")
-    new_name = input("Novo nome do speaker: ")
-    new_description = input("Nova descrição: ")
+    old_name = input("Current Speaker Name: ")
+    new_name = input("New Speaker Name: ")
+    new_description = input("New Description: ")
     response = requests.post(f"{BASE_URL}/edit_speaker", data={
         "event_id": event_id,
         "old_name": old_name,
@@ -92,9 +92,9 @@ def list_vendors():
 
 def edit_vendor():
     event_id = input("Event ID: ")
-    old_name = input("Nome atual do vendor: ")
-    new_name = input("Novo nome do vendor: ")
-    new_services = input("Novos serviços: ")
+    old_name = input("Current Vendor Name: ")
+    new_name = input("New Vendor Name: ")
+    new_services = input("New Services: ")
     response = requests.post(f"{BASE_URL}/edit_vendor", data={
         "event_id": event_id,
         "old_name": old_name,
@@ -110,46 +110,38 @@ def get_budget():
 
 def edit_budget():
     event_id = input("Event ID: ")
-    new_budget = input("Novo budget: ")
+    new_budget = input("New Budget: ")
     response = requests.post(f"{BASE_URL}/edit_budget", data={
         "event_id": event_id,
         "new_budget": new_budget
     })
     print(response.json())
 
-
 def main():
     while True:
         print("\n===== MENU =====\n")
-        
         print("Events Session:")
         print("1. Create event")
         print("2. List events")
         print("3. Edit event")
         print("4. Delete event\n")
-        
         print("Participants Session:")
         print("5. Register participant")
         print("6. List participants\n")
-        
         print("Speakers Session:")
         print("7. Register speaker")
         print("8. List speakers")
         print("9. Edit speaker\n")
-        
         print("Vendors Session:")
         print("10. Register vendor")
         print("11. List vendors")
         print("12. Edit vendor\n")
-        
         print("Budget Session:")
         print("13. Increase budget")
         print("14. Get budget")
         print("15. Edit budget\n")
-        
         print("Feedback:")
         print("16. Add feedback\n")
-        
         print("17. Exit\n")
         
         option = input("Choose an option: ")
