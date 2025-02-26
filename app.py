@@ -13,12 +13,6 @@ speakers_manager = SpeakersMng()
 vendors_manager = VendorsMng()
 budget_manager = BudgetandFinancialMng()
 
-def get_event_or_404(event_id):
-    event = event_manager.get_event_by_id(event_id)
-    if not event:
-        return None, jsonify({"error": "Event not found"}), 404
-    return event, None, None
-
 @app.route("/", methods=["GET"])
 def list_events():
     return jsonify(event_manager.list_events())

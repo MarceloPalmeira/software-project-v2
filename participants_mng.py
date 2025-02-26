@@ -7,6 +7,3 @@ class ParticipantsMng:
             self.participants[event.id] = []
         self.participants[event.id].append(name)
         event.attendees.append(name)
-
-    def list_participants(self, event):
-        return self.participants.get(event.id, [])
