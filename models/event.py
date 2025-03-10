@@ -1,12 +1,17 @@
-class Event:
-    def __init__(self, event_id, name, date, budget=0):
-        self.id = event_id
+from sqlalchemy import Column, Integer, String
+from database.db import Base
+
+class Event(Base):
+    __tablename__ = "events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    date = Column(String, nullable=False)
+    budget = Column(Integer, default=0)
+
+    def __init__(self, name, date, budget=0):  # Corrigido: Sem `id`
         self.name = name
         self.date = date
-        self.attendees = []
-        self.speakers = []
-        self.vendors = []
-        self.feedbacks = []
         self.budget = budget
 
     def to_dict(self):
@@ -14,9 +19,5 @@ class Event:
             "id": self.id,
             "name": self.name,
             "date": self.date,
-            "attendees": self.attendees,
-            "speakers": self.speakers,
-            "vendors": self.vendors,
-            "feedbacks": self.feedbacks,
             "budget": self.budget
         }

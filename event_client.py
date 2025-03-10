@@ -6,8 +6,16 @@ def create_event():
     name = input("Event Name: ")
     date = input("Event Date (DD-MM-YYYY): ")
     budget = input("Initial Budget: ")
-    response = requests.post(f"{BASE_URL}/create_event", data={"name": name, "date": date, "budget": budget})
-    print(response.json())
+
+    response = requests.post(f"{BASE_URL}/create_event", json={"name": name, "date": date, "budget": budget})
+
+    print(f"Status Code: {response.status_code}")
+    print(f"Raw Response: {response.text}")
+
+    try:
+        print(response.json())
+    except requests.exceptions.JSONDecodeError:
+        print("Erro: A resposta não é um JSON válido.")
 
 def get_events():
     response = requests.get(f"{BASE_URL}/")

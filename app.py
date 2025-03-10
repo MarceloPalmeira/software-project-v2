@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
 from models.event import Event
+from database.db import SessionLocal
+
 
 app = Flask(__name__)
 
@@ -19,19 +21,32 @@ def list_events():
 
 @app.route("/create_event", methods=["POST"])
 def create_event():
-    global next_event_id
-    name = request.form.get("name")
-    date = request.form.get("date")
-    budget = request.form.get("budget", "0")
+    session = SessionLocal()
+    
     try:
-        budget = int(budget)
-    except ValueError:
-        budget = 0
-    event = Event(next_event_id, name, date, budget)
-    events.append(event)
-    next_event_id += 1
-    return jsonify(event.to_dict())
+        data = request.get_json()
+        print("Dados recebidos:", data)  # Debug para ver os dados recebidos
 
+        if not data:
+            return jsonify({"error": "Invalid JSON format"}), 400
+
+        name = data.get("name")
+        date = data.get("date")
+        budget = data.get("budget", 0)
+
+        if not name or not date:
+            return jsonify({"error": "Missing required fields"}), 400
+
+        event = Event(name=name, date=date, budget=int(budget))  # Correção: Removido `next_event_id`
+        session.add(event)
+        session.commit()
+        session.refresh(event)
+        session.close()
+
+        return jsonify(event.to_dict()), 201
+    except Exception as e:
+        print("Erro no servidor:", str(e))
+        return jsonify({"error": "Erro interno do servidor"}), 500
 @app.route("/edit_event", methods=["POST"])
 def edit_event():
     event_id = int(request.form.get("event_id"))
