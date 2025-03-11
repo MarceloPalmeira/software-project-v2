@@ -27,6 +27,34 @@ def get_events():
     except Exception as e:
         print("Erro ao obter eventos:", e)
 
+def edit_event():
+    event_id = input("Event ID to edit: ")
+    new_name = input("New Event Name (leave blank to keep current): ")
+    new_date = input("New Event Date (DD-MM-YYYY, leave blank to keep current): ")
+    new_budget = input("New Budget (leave blank to keep current): ")
+
+    payload = {"event_id": event_id}
+    if new_name.strip() != "":
+        payload["name"] = new_name
+    if new_date.strip() != "":
+        payload["date"] = new_date
+    if new_budget.strip() != "":
+        payload["budget"] = new_budget
+
+    response = requests.post(f"{BASE_URL}/edit_event", json=payload)
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
+
+def delete_event():
+    event_id = input("Event ID to delete: ")
+    response = requests.post(f"{BASE_URL}/delete_event", json={"event_id": event_id})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
+
 def register_attendee():
     event_id = input("Event ID: ")
     name = input("Participant Name: ")
@@ -44,58 +72,24 @@ def get_attendees():
     except Exception as e:
         print("Erro: A resposta não é um JSON válido.", e)
 
+def edit_participant():
+    participant_id = input("Participant ID: ")
+    new_name = input("New Participant Name (leave blank to keep current): ")
+    payload = {"participant_id": participant_id}
+    if new_name.strip() != "":
+        payload["new_name"] = new_name
+
+    response = requests.post(f"{BASE_URL}/edit_participant", json=payload)
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro ao decodificar a resposta:", e)
+
 def register_speaker():
     event_id = input("Event ID: ")
     name = input("Speaker Name: ")
     description = input("Description: ")
     response = requests.post(f"{BASE_URL}/register_speaker", json={"event_id": event_id, "name": name, "description": description})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
-
-def register_vendor():
-    event_id = input("Event ID: ")
-    name = input("Vendor Name: ")
-    services = input("Offered Services: ")
-    response = requests.post(f"{BASE_URL}/register_vendor", json={"event_id": event_id, "name": name, "services": services})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
-
-def update_budget():
-    event_id = input("Event ID: ")
-    amount = input("Amount to add to budget: ")
-    response = requests.post(f"{BASE_URL}/update_budget", json={"event_id": event_id, "amount": amount})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
-
-def add_feedback():
-    event_id = input("Event ID: ")
-    feedback = input("Enter your feedback: ")
-    response = requests.post(f"{BASE_URL}/add_feedback", json={"event_id": event_id, "feedback": feedback})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
-
-def edit_event():
-    event_id = input("Event ID to edit: ")
-    new_name = input("New Event Name: ")
-    new_date = input("New Event Date (DD-MM-YYYY): ")
-    new_budget = input("New Budget: ")
-    response = requests.post(f"{BASE_URL}/edit_event", json={"event_id": event_id, "name": new_name, "date": new_date, "budget": new_budget})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
-
-def delete_event():
-    event_id = input("Event ID to delete: ")
-    response = requests.post(f"{BASE_URL}/delete_event", json={"event_id": event_id})
     try:
         print(response.json())
     except Exception as e:
@@ -110,16 +104,26 @@ def list_speakers():
         print("Erro: A resposta não é um JSON válido.", e)
 
 def edit_speaker():
+    speaker_id = input("Speaker ID: ")
+    new_name = input("New Speaker Name (leave blank to keep current): ")
+    new_description = input("New Description (leave blank to keep current): ")
+    payload = {"speaker_id": speaker_id}
+    if new_name.strip() != "":
+        payload["new_name"] = new_name
+    if new_description.strip() != "":
+        payload["new_description"] = new_description
+
+    response = requests.post(f"{BASE_URL}/edit_speaker", json=payload)
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro ao decodificar a resposta:", e)
+
+def register_vendor():
     event_id = input("Event ID: ")
-    old_name = input("Current Speaker Name: ")
-    new_name = input("New Speaker Name: ")
-    new_description = input("New Description: ")
-    response = requests.post(f"{BASE_URL}/edit_speaker", json={
-        "event_id": event_id,
-        "old_name": old_name,
-        "new_name": new_name,
-        "new_description": new_description
-    })
+    name = input("Vendor Name: ")
+    services = input("Offered Services: ")
+    response = requests.post(f"{BASE_URL}/register_vendor", json={"event_id": event_id, "name": name, "services": services})
     try:
         print(response.json())
     except Exception as e:
@@ -134,16 +138,25 @@ def list_vendors():
         print("Erro: A resposta não é um JSON válido.", e)
 
 def edit_vendor():
+    vendor_id = input("Vendor ID: ")
+    new_name = input("New Vendor Name (leave blank to keep current): ")
+    new_services = input("New Services (leave blank to keep current): ")
+    payload = {"vendor_id": vendor_id}
+    if new_name.strip() != "":
+        payload["new_name"] = new_name
+    if new_services.strip() != "":
+        payload["new_services"] = new_services
+
+    response = requests.post(f"{BASE_URL}/edit_vendor", json=payload)
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
+
+def update_budget():
     event_id = input("Event ID: ")
-    old_name = input("Current Vendor Name: ")
-    new_name = input("New Vendor Name: ")
-    new_services = input("New Services: ")
-    response = requests.post(f"{BASE_URL}/edit_vendor", json={
-        "event_id": event_id,
-        "old_name": old_name,
-        "new_name": new_name,
-        "new_services": new_services
-    })
+    amount = input("Amount to add to budget: ")
+    response = requests.post(f"{BASE_URL}/update_budget", json={"event_id": event_id, "amount": amount})
     try:
         print(response.json())
     except Exception as e:
@@ -166,6 +179,15 @@ def edit_budget():
     except Exception as e:
         print("Erro: A resposta não é um JSON válido.", e)
 
+def add_feedback():
+    event_id = input("Event ID: ")
+    feedback = input("Enter your feedback: ")
+    response = requests.post(f"{BASE_URL}/add_feedback", json={"event_id": event_id, "feedback": feedback})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
+
 def main():
     while True:
         print("\n===== MENU =====\n")
@@ -176,22 +198,23 @@ def main():
         print("4. Delete event\n")
         print("Participants Session:")
         print("5. Register participant")
-        print("6. List participants\n")
+        print("6. List participants")
+        print("7. Edit participant\n")
         print("Speakers Session:")
-        print("7. Register speaker")
-        print("8. List speakers")
-        print("9. Edit speaker\n")
+        print("8. Register speaker")
+        print("9. List speakers")
+        print("10. Edit speaker\n")
         print("Vendors Session:")
-        print("10. Register vendor")
-        print("11. List vendors")
-        print("12. Edit vendor\n")
+        print("11. Register vendor")
+        print("12. List vendors")
+        print("13. Edit vendor\n")
         print("Budget Session:")
-        print("13. Increase budget")
-        print("14. Get budget")
-        print("15. Edit budget\n")
+        print("14. Increase budget")
+        print("15. Get budget")
+        print("16. Edit budget\n")
         print("Feedback:")
-        print("16. Add feedback\n")
-        print("17. Exit\n")
+        print("17. Add feedback\n")
+        print("18. Exit\n")
         
         option = input("Choose an option: ")
         
@@ -208,26 +231,28 @@ def main():
         elif option == "6":
             get_attendees()
         elif option == "7":
-            register_speaker()
+            edit_participant()
         elif option == "8":
-            list_speakers()
+            register_speaker()
         elif option == "9":
-            edit_speaker()
+            list_speakers()
         elif option == "10":
-            register_vendor()
+            edit_speaker()
         elif option == "11":
-            list_vendors()
+            register_vendor()
         elif option == "12":
-            edit_vendor()
+            list_vendors()
         elif option == "13":
-            update_budget()
+            edit_vendor()
         elif option == "14":
-            get_budget()
+            update_budget()
         elif option == "15":
-            edit_budget()
+            get_budget()
         elif option == "16":
-            add_feedback()
+            edit_budget()
         elif option == "17":
+            add_feedback()
+        elif option == "18":
             print("Exiting...")
             break
         else:

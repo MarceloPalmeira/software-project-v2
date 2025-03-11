@@ -199,6 +199,34 @@ def get_attendees():
     finally:
         session.close()
 
+# Novo endpoint para EDITAR PARTICIPANTE
+
+@app.route("/edit_participant", methods=["POST"])
+def edit_participant():
+    session = SessionLocal()
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON format"}), 400
+
+        participant_id = data.get("participant_id")
+        new_name = data.get("new_name")
+        if not participant_id or not new_name:
+            return jsonify({"error": "Missing participant_id or new_name"}), 400
+
+        participant = session.query(Participant).filter(Participant.id == participant_id).first()
+        if not participant:
+            return jsonify({"error": "Participant not found"}), 404
+
+        participant.name = new_name
+        session.commit()
+        return jsonify({"message": "Participant updated", "participant": participant.to_dict()})
+    except Exception as e:
+        session.rollback()
+        return jsonify({"error": str(e)}), 500
+    finally:
+        session.close()
+
 # Endpoints para PALESTRANTES
 
 @app.route("/register_speaker", methods=["POST"])
@@ -244,6 +272,7 @@ def list_speakers():
     finally:
         session.close()
 
+# Endpoint para EDITAR PALESTRANTE (opção 9 corrigida)
 @app.route("/edit_speaker", methods=["POST"])
 def edit_speaker():
     session = SessionLocal()
@@ -253,17 +282,24 @@ def edit_speaker():
             return jsonify({"error": "Invalid JSON format"}), 400
 
         speaker_id = data.get("speaker_id")
+        if not speaker_id:
+            return jsonify({"error": "Missing speaker_id"}), 400
+
         new_name = data.get("new_name")
         new_description = data.get("new_description")
-        if not speaker_id or not new_name:
-            return jsonify({"error": "Missing parameters"}), 400
 
         speaker = session.query(Speaker).filter(Speaker.id == speaker_id).first()
         if not speaker:
             return jsonify({"error": "Speaker not found"}), 404
 
-        speaker.name = new_name
-        speaker.description = new_description
+        # Atualiza o nome se for fornecido e não for vazio
+        if new_name is not None and new_name.strip() != "":
+            speaker.name = new_name
+
+        # Atualiza a descrição se for fornecida e não for vazia
+        if new_description is not None and new_description.strip() != "":
+            speaker.description = new_description
+
         session.commit()
         return jsonify({"message": "Speaker updated", "speaker": speaker.to_dict()})
     except Exception as e:
@@ -317,6 +353,8 @@ def list_vendors():
     finally:
         session.close()
 
+# Endpoint para EDITAR FORNECEDOR (opção 12 corrigida)
+
 @app.route("/edit_vendor", methods=["POST"])
 def edit_vendor():
     session = SessionLocal()
@@ -328,15 +366,25 @@ def edit_vendor():
         vendor_id = data.get("vendor_id")
         new_name = data.get("new_name")
         new_services = data.get("new_services")
-        if not vendor_id or not new_name:
-            return jsonify({"error": "Missing parameters"}), 400
+        
+        if not vendor_id:
+            return jsonify({"error": "Missing vendor_id"}), 400
+
+        # Verifica se pelo menos um dos campos foi fornecido para atualizar
+        if (new_name is None or new_name.strip() == "") and (new_services is None or new_services.strip() == ""):
+            return jsonify({"error": "At least one field (new_name or new_services) must be provided to update"}), 400
 
         vendor = session.query(Vendor).filter(Vendor.id == vendor_id).first()
         if not vendor:
             return jsonify({"error": "Vendor not found"}), 404
 
-        vendor.name = new_name
-        vendor.services = new_services
+        # Atualiza o nome se for fornecido e não for vazio
+        if new_name is not None and new_name.strip() != "":
+            vendor.name = new_name
+        # Atualiza os serviços se for fornecido e não for vazio
+        if new_services is not None and new_services.strip() != "":
+            vendor.services = new_services
+
         session.commit()
         return jsonify({"message": "Vendor updated", "vendor": vendor.to_dict()})
     except Exception as e:
