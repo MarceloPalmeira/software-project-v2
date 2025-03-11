@@ -8,122 +8,163 @@ def create_event():
     budget = input("Initial Budget: ")
 
     response = requests.post(f"{BASE_URL}/create_event", json={"name": name, "date": date, "budget": budget})
-
     print(f"Status Code: {response.status_code}")
     print(f"Raw Response: {response.text}")
-
     try:
         print(response.json())
-    except requests.exceptions.JSONDecodeError:
-        print("Erro: A resposta não é um JSON válido.")
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def get_events():
-    response = requests.get(f"{BASE_URL}/")
-    events = response.json()
-    if not events:
-        print("No events registered.")
-    else:
-        for event in events:
-            print(f"ID: {event['id']} | Name: {event['name']} | Date: {event['date']} | Budget: {event['budget']}")
+    response = requests.get(f"{BASE_URL}/events")
+    try:
+        events = response.json()
+        if not events:
+            print("No events registered.")
+        else:
+            for event in events:
+                print(f"ID: {event['id']} | Name: {event['name']} | Date: {event['date']} | Budget: {event['budget']}")
+    except Exception as e:
+        print("Erro ao obter eventos:", e)
 
 def register_attendee():
     event_id = input("Event ID: ")
     name = input("Participant Name: ")
-    response = requests.post(f"{BASE_URL}/register_participant", data={"name": name, "event_id": event_id})
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/register_participant", json={"event_id": event_id, "name": name})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def get_attendees():
-    response = requests.get(f"{BASE_URL}/attendees")
-    print(response.json())
+    event_id = input("Event ID: ")
+    response = requests.get(f"{BASE_URL}/attendees", params={"event_id": event_id})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def register_speaker():
     event_id = input("Event ID: ")
     name = input("Speaker Name: ")
     description = input("Description: ")
-    response = requests.post(f"{BASE_URL}/register_speaker", data={"name": name, "description": description, "event_id": event_id})
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/register_speaker", json={"event_id": event_id, "name": name, "description": description})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def register_vendor():
     event_id = input("Event ID: ")
     name = input("Vendor Name: ")
     services = input("Offered Services: ")
-    response = requests.post(f"{BASE_URL}/register_vendor", data={"name": name, "services": services, "event_id": event_id})
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/register_vendor", json={"event_id": event_id, "name": name, "services": services})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def update_budget():
     event_id = input("Event ID: ")
     amount = input("Amount to add to budget: ")
-    response = requests.post(f"{BASE_URL}/update_budget", data={"event_id": event_id, "amount": amount})
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/update_budget", json={"event_id": event_id, "amount": amount})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def add_feedback():
     event_id = input("Event ID: ")
     feedback = input("Enter your feedback: ")
-    response = requests.post(f"{BASE_URL}/add_feedback", data={"event_id": event_id, "feedback": feedback})
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/add_feedback", json={"event_id": event_id, "feedback": feedback})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def edit_event():
     event_id = input("Event ID to edit: ")
     new_name = input("New Event Name: ")
     new_date = input("New Event Date (DD-MM-YYYY): ")
     new_budget = input("New Budget: ")
-    response = requests.post(f"{BASE_URL}/edit_event", data={"event_id": event_id, "name": new_name, "date": new_date, "budget": new_budget})
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/edit_event", json={"event_id": event_id, "name": new_name, "date": new_date, "budget": new_budget})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def delete_event():
     event_id = input("Event ID to delete: ")
-    response = requests.post(f"{BASE_URL}/delete_event", data={"event_id": event_id})
-    print(response.json())
-    
+    response = requests.post(f"{BASE_URL}/delete_event", json={"event_id": event_id})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
+
 def list_speakers():
     event_id = input("Event ID: ")
     response = requests.get(f"{BASE_URL}/list_speakers", params={"event_id": event_id})
-    print(response.json())
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def edit_speaker():
     event_id = input("Event ID: ")
     old_name = input("Current Speaker Name: ")
     new_name = input("New Speaker Name: ")
     new_description = input("New Description: ")
-    response = requests.post(f"{BASE_URL}/edit_speaker", data={
+    response = requests.post(f"{BASE_URL}/edit_speaker", json={
         "event_id": event_id,
         "old_name": old_name,
         "new_name": new_name,
         "new_description": new_description
     })
-    print(response.json())
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def list_vendors():
     event_id = input("Event ID: ")
     response = requests.get(f"{BASE_URL}/list_vendors", params={"event_id": event_id})
-    print(response.json())
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def edit_vendor():
     event_id = input("Event ID: ")
     old_name = input("Current Vendor Name: ")
     new_name = input("New Vendor Name: ")
     new_services = input("New Services: ")
-    response = requests.post(f"{BASE_URL}/edit_vendor", data={
+    response = requests.post(f"{BASE_URL}/edit_vendor", json={
         "event_id": event_id,
         "old_name": old_name,
         "new_name": new_name,
         "new_services": new_services
     })
-    print(response.json())
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def get_budget():
     event_id = input("Event ID: ")
     response = requests.get(f"{BASE_URL}/get_budget", params={"event_id": event_id})
-    print(response.json())
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def edit_budget():
     event_id = input("Event ID: ")
     new_budget = input("New Budget: ")
-    response = requests.post(f"{BASE_URL}/edit_budget", data={
-        "event_id": event_id,
-        "new_budget": new_budget
-    })
-    print(response.json())
+    response = requests.post(f"{BASE_URL}/edit_budget", json={"event_id": event_id, "new_budget": new_budget})
+    try:
+        print(response.json())
+    except Exception as e:
+        print("Erro: A resposta não é um JSON válido.", e)
 
 def main():
     while True:
