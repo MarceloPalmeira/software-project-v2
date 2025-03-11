@@ -2,6 +2,12 @@ from flask import Flask, request, jsonify
 from models.event import Event
 from database.db import SessionLocal
 
+# Import dos novos modelos
+from models.participant import Participant
+from models.speaker import Speaker
+from models.vendor import Vendor
+from models.feedback import Feedback
+
 app = Flask(__name__)
 
 @app.route("/events", methods=["GET"])
@@ -149,6 +155,8 @@ def edit_budget():
     finally:
         session.close()
 
+# Endpoints para PARTICIPANTES
+
 @app.route("/register_participant", methods=["POST"])
 def register_participant():
     session = SessionLocal()
@@ -166,11 +174,11 @@ def register_participant():
         if not event:
             return jsonify({"error": "Event not found"}), 404
 
-        # Armazenando participantes como uma string separada por vírgulas
-        event.participants = f"{event.participants}, {name}" if event.participants else name
-
+        participant = Participant(name=name, event_id=event_id)
+        session.add(participant)
         session.commit()
-        return jsonify({"message": "Participant registered", "event": event.to_dict()})
+        session.refresh(participant)
+        return jsonify({"message": "Participant registered", "participant": participant.to_dict()})
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -185,11 +193,13 @@ def get_attendees():
         event = session.query(Event).filter(Event.id == event_id).first()
         if not event:
             return jsonify({"error": "Event not found"}), 404
-        return jsonify({"participants": event.participants})
+        return jsonify({"participants": [p.to_dict() for p in event.participants]})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
+
+# Endpoints para PALESTRANTES
 
 @app.route("/register_speaker", methods=["POST"])
 def register_speaker():
@@ -209,11 +219,11 @@ def register_speaker():
         if not event:
             return jsonify({"error": "Event not found"}), 404
 
-        new_speaker = f"{name} ({description})" if description else name
-        event.speakers = f"{event.speakers}, {new_speaker}" if event.speakers else new_speaker
-
+        speaker = Speaker(name=name, description=description, event_id=event_id)
+        session.add(speaker)
         session.commit()
-        return jsonify({"message": "Speaker registered", "event": event.to_dict()})
+        session.refresh(speaker)
+        return jsonify({"message": "Speaker registered", "speaker": speaker.to_dict()})
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -228,7 +238,7 @@ def list_speakers():
         event = session.query(Event).filter(Event.id == event_id).first()
         if not event:
             return jsonify({"error": "Event not found"}), 404
-        return jsonify({"speakers": event.speakers})
+        return jsonify({"speakers": [s.to_dict() for s in event.speakers]})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
@@ -242,34 +252,27 @@ def edit_speaker():
         if not data:
             return jsonify({"error": "Invalid JSON format"}), 400
 
-        event_id = data.get("event_id")
-        old_name = data.get("old_name")
+        speaker_id = data.get("speaker_id")
         new_name = data.get("new_name")
         new_description = data.get("new_description")
-        if not event_id or not old_name or not new_name:
+        if not speaker_id or not new_name:
             return jsonify({"error": "Missing parameters"}), 400
 
-        event = session.query(Event).filter(Event.id == event_id).first()
-        if not event:
-            return jsonify({"error": "Event not found"}), 404
-
-        speakers = event.speakers.split(", ") if event.speakers else []
-        updated = False
-        for i, sp in enumerate(speakers):
-            if sp.startswith(old_name):
-                speakers[i] = f"{new_name} ({new_description})" if new_description else new_name
-                updated = True
-        if not updated:
+        speaker = session.query(Speaker).filter(Speaker.id == speaker_id).first()
+        if not speaker:
             return jsonify({"error": "Speaker not found"}), 404
 
-        event.speakers = ", ".join(speakers)
+        speaker.name = new_name
+        speaker.description = new_description
         session.commit()
-        return jsonify({"message": "Speaker updated", "event": event.to_dict()})
+        return jsonify({"message": "Speaker updated", "speaker": speaker.to_dict()})
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
+
+# Endpoints para FORNECEDORES
 
 @app.route("/register_vendor", methods=["POST"])
 def register_vendor():
@@ -289,11 +292,11 @@ def register_vendor():
         if not event:
             return jsonify({"error": "Event not found"}), 404
 
-        new_vendor = f"{name} ({services})" if services else name
-        event.vendors = f"{event.vendors}, {new_vendor}" if event.vendors else new_vendor
-
+        vendor = Vendor(name=name, services=services, event_id=event_id)
+        session.add(vendor)
         session.commit()
-        return jsonify({"message": "Vendor registered", "event": event.to_dict()})
+        session.refresh(vendor)
+        return jsonify({"message": "Vendor registered", "vendor": vendor.to_dict()})
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
@@ -308,7 +311,7 @@ def list_vendors():
         event = session.query(Event).filter(Event.id == event_id).first()
         if not event:
             return jsonify({"error": "Event not found"}), 404
-        return jsonify({"vendors": event.vendors})
+        return jsonify({"vendors": [v.to_dict() for v in event.vendors]})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     finally:
@@ -322,34 +325,27 @@ def edit_vendor():
         if not data:
             return jsonify({"error": "Invalid JSON format"}), 400
 
-        event_id = data.get("event_id")
-        old_name = data.get("old_name")
+        vendor_id = data.get("vendor_id")
         new_name = data.get("new_name")
         new_services = data.get("new_services")
-        if not event_id or not old_name or not new_name:
+        if not vendor_id or not new_name:
             return jsonify({"error": "Missing parameters"}), 400
 
-        event = session.query(Event).filter(Event.id == event_id).first()
-        if not event:
-            return jsonify({"error": "Event not found"}), 404
-
-        vendors = event.vendors.split(", ") if event.vendors else []
-        updated = False
-        for i, ven in enumerate(vendors):
-            if ven.startswith(old_name):
-                vendors[i] = f"{new_name} ({new_services})" if new_services else new_name
-                updated = True
-        if not updated:
+        vendor = session.query(Vendor).filter(Vendor.id == vendor_id).first()
+        if not vendor:
             return jsonify({"error": "Vendor not found"}), 404
 
-        event.vendors = ", ".join(vendors)
+        vendor.name = new_name
+        vendor.services = new_services
         session.commit()
-        return jsonify({"message": "Vendor updated", "event": event.to_dict()})
+        return jsonify({"message": "Vendor updated", "vendor": vendor.to_dict()})
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
+
+# Endpoints para FEEDBACK
 
 @app.route("/add_feedback", methods=["POST"])
 def add_feedback():
@@ -360,18 +356,19 @@ def add_feedback():
             return jsonify({"error": "Invalid JSON format"}), 400
 
         event_id = data.get("event_id")
-        feedback = data.get("feedback")
-        if not event_id or not feedback:
+        content = data.get("feedback")
+        if not event_id or not content:
             return jsonify({"error": "Missing event_id or feedback"}), 400
 
         event = session.query(Event).filter(Event.id == event_id).first()
         if not event:
             return jsonify({"error": "Event not found"}), 404
 
-        event.feedback = f"{event.feedback}\n{feedback}" if event.feedback else feedback
-
+        feedback = Feedback(content=content, event_id=event_id)
+        session.add(feedback)
         session.commit()
-        return jsonify({"message": "Feedback added", "event": event.to_dict()})
+        session.refresh(feedback)
+        return jsonify({"message": "Feedback added", "feedback": feedback.to_dict()})
     except Exception as e:
         session.rollback()
         return jsonify({"error": str(e)}), 500
