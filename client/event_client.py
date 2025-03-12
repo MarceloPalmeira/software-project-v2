@@ -1,3 +1,4 @@
+# client/event_client.py
 import requests
 
 BASE_URL = "http://127.0.0.1:5000"
@@ -12,28 +13,13 @@ class EventClient:
             date = input("Event Date (DD-MM-YYYY): ")
             budget = input("Initial Budget: ")
 
-            response = requests.post(f"{self.base_url}/create_event", json={"name": name, "date": date, "budget": budget})
+            response = requests.post(
+                f"{self.base_url}/create_event",
+                json={"name": name, "date": date, "budget": budget}
+            )
             self._handle_response(response)
 
             if response.status_code == 201:
-                break
-
-    def update_budget(self):
-        while True:
-            event_id = input("Event ID: ")
-            amount = input("Amount to add to budget: ")
-
-            try:
-                int(event_id)
-                int(amount)
-            except ValueError:
-                print("Error: Invalid input. Please enter valid numeric values.")
-                continue
-
-            response = requests.post(f"{self.base_url}/update_budget", json={"event_id": event_id, "amount": amount})
-            self._handle_response(response)
-
-            if response.status_code == 200:
                 break
 
     def get_events(self):
@@ -82,7 +68,10 @@ class EventClient:
                 continue
 
             name = input("Participant Name: ")
-            response = requests.post(f"{self.base_url}/register_participant", json={"event_id": event_id, "name": name})
+            response = requests.post(
+                f"{self.base_url}/register_participant",
+                json={"event_id": event_id, "name": name}
+            )
             self._handle_response(response)
             break
 
@@ -116,7 +105,10 @@ class EventClient:
 
             name = input("Speaker Name: ")
             description = input("Description: ")
-            response = requests.post(f"{self.base_url}/register_speaker", json={"event_id": event_id, "name": name, "description": description})
+            response = requests.post(
+                f"{self.base_url}/register_speaker",
+                json={"event_id": event_id, "name": name, "description": description}
+            )
             self._handle_response(response)
             break
 
@@ -153,7 +145,10 @@ class EventClient:
 
             name = input("Vendor Name: ")
             services = input("Offered Services: ")
-            response = requests.post(f"{self.base_url}/register_vendor", json={"event_id": event_id, "name": name, "services": services})
+            response = requests.post(
+                f"{self.base_url}/register_vendor",
+                json={"event_id": event_id, "name": name, "services": services}
+            )
             self._handle_response(response)
             break
 
@@ -192,7 +187,10 @@ class EventClient:
             print("Error: Invalid input. Please enter valid numeric values.")
             return
 
-        response = requests.post(f"{self.base_url}/update_budget", json={"event_id": event_id, "amount": amount})
+        response = requests.post(
+            f"{self.base_url}/update_budget",
+            json={"event_id": event_id, "amount": amount}
+        )
         self._handle_response(response)
 
     def get_budget(self):
@@ -218,7 +216,10 @@ class EventClient:
             print("Error: Invalid input. Please enter valid numeric values.")
             return
 
-        response = requests.post(f"{self.base_url}/edit_budget", json={"event_id": event_id, "new_budget": new_budget})
+        response = requests.post(
+            f"{self.base_url}/edit_budget",
+            json={"event_id": event_id, "new_budget": new_budget}
+        )
         self._handle_response(response)
 
     def add_feedback(self):
@@ -231,25 +232,19 @@ class EventClient:
             print("Error: Invalid event ID. Please enter a valid numeric ID.")
             return
 
-        response = requests.post(f"{self.base_url}/add_feedback", json={"event_id": event_id, "feedback": feedback})
+        response = requests.post(
+            f"{self.base_url}/add_feedback",
+            json={"event_id": event_id, "feedback": feedback}
+        )
         self._handle_response(response)
 
     def _handle_response(self, response):
         print(f"Status Code: {response.status_code}")
         print(f"Raw Response: {response.text}")
-
-        if response.status_code == 200 or response.status_code == 201:
-            try:
-                print(response.json())
-            except Exception as e:
-                print("Error decoding the response:", e)
-        
-        else:
-            try:
-                error_message = response.json()
-                print(f"Error: {error_message.get('error', 'Unknown error')}")
-            except Exception as e:
-                print("Error: The response is not a valid JSON.", e)
+        try:
+            print(response.json())
+        except Exception as e:
+            print("Error decoding the response:", e)
 
     def main(self):
         while True:
@@ -304,7 +299,6 @@ class EventClient:
     def exit_program(self):
         print("Exiting...")
         exit()
-
 
 if __name__ == "__main__":
     client = EventClient()
