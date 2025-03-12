@@ -1,4 +1,3 @@
-# controllers/feedback_controller.py
 from flask import Blueprint, request, jsonify
 from services.feedback_service import FeedbackService
 
@@ -12,7 +11,8 @@ def add_feedback():
     content = data.get("feedback")
     if not event_id or not content:
         return jsonify({"error": "Missing event_id or feedback"}), 400
-    feedback = feedback_service.add_feedback(event_id, content)
+    # Agora usamos 'create' para feedback
+    feedback = feedback_service.create(event_id, content)
     if not feedback:
         return jsonify({"error": "Event not found"}), 404
     return jsonify({"message": "Feedback added", "feedback": feedback})

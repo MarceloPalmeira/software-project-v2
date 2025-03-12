@@ -2,19 +2,13 @@
 from database.db import SessionLocal
 from models.event import Event
 from datetime import datetime
+from services.base_service import BaseService
 
-class EventService:
-    def list_events(self):
+class EventService(BaseService):
+    def create(self, name, date, budget):
         session = SessionLocal()
         try:
-            events = session.query(Event).all()
-            return [event.to_dict() for event in events]
-        finally:
-            session.close()
-
-    def create_event(self, name, date, budget):
-        session = SessionLocal()
-        try:
+            # Aqui, 'date' já deve ser uma data (ou string formatada conforme seu model)
             event = Event(name=name, date=date, budget=budget)
             session.add(event)
             session.commit()
@@ -26,16 +20,16 @@ class EventService:
         finally:
             session.close()
 
-    def edit_event(self, data):
+    def update(self, event_id, **data):
         session = SessionLocal()
         try:
-            event_id = data.get("event_id")
             event = session.query(Event).filter(Event.id == event_id).first()
             if not event:
                 return None
             if "name" in data:
                 event.name = data["name"]
             if "date" in data:
+                # Se a data vier como string, você pode converter:
                 event.date = datetime.strptime(data["date"], "%d-%m-%Y").date()
             if "budget" in data:
                 event.budget = int(data["budget"])
@@ -47,7 +41,7 @@ class EventService:
         finally:
             session.close()
 
-    def delete_event(self, event_id):
+    def delete(self, event_id):
         session = SessionLocal()
         try:
             event = session.query(Event).filter(Event.id == event_id).first()
@@ -59,6 +53,15 @@ class EventService:
         except Exception as e:
             session.rollback()
             raise e
+        finally:
+            session.close()
+
+    # Outros métodos específicos que não fazem parte do contrato abstrato:
+    def list_events(self):
+        session = SessionLocal()
+        try:
+            events = session.query(Event).all()
+            return [event.to_dict() for event in events]
         finally:
             session.close()
 

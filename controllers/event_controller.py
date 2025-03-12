@@ -1,4 +1,3 @@
-# controllers/event_controller.py
 from flask import Blueprint, request, jsonify
 from services.event_service import EventService
 from datetime import datetime
@@ -31,13 +30,18 @@ def create_event():
     except ValueError:
         return jsonify({"error": "Budget must be a valid number"}), 400
 
-    event = event_service.create_event(name, date, budget)
+    event = event_service.create(name, date, budget)
     return jsonify(event), 201
 
 @bp.route("/edit_event", methods=["POST"])
 def edit_event():
     data = request.get_json()
-    event = event_service.edit_event(data)
+    event_id = data.get("event_id")
+    if not event_id:
+        return jsonify({"error": "Missing event_id"}), 400
+    # Remove o event_id do dicionário para evitar duplicidade
+    data.pop("event_id", None)
+    event = event_service.update(event_id, **data)
     if not event:
         return jsonify({"error": "Event not found"}), 404
     return jsonify(event)
@@ -46,6 +50,6 @@ def edit_event():
 def delete_event():
     data = request.get_json()
     event_id = data.get("event_id")
-    if event_service.delete_event(event_id):
+    if event_service.delete(event_id):
         return jsonify({"message": "Event deleted", "id": event_id})
     return jsonify({"error": "Event not found"}), 404

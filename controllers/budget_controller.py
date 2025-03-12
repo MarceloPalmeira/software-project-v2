@@ -1,4 +1,3 @@
-# controllers/budget_controller.py
 from flask import Blueprint, request, jsonify
 from services.event_service import EventService
 

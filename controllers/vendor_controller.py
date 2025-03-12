@@ -1,4 +1,3 @@
-# controllers/vendor_controller.py
 from flask import Blueprint, request, jsonify
 from services.vendor_service import VendorService
 
@@ -13,7 +12,8 @@ def register_vendor():
     services_offered = data.get("services")
     if not event_id or not name:
         return jsonify({"error": "Missing event_id or vendor name"}), 400
-    vendor = vendor_service.register_vendor(event_id, name, services_offered)
+    # Usa o método 'create'
+    vendor = vendor_service.create(event_id, name, services_offered)
     if not vendor:
         return jsonify({"error": "Event not found"}), 404
     return jsonify({"message": "Vendor registered", "vendor": vendor})
@@ -29,9 +29,13 @@ def list_vendors():
 @bp.route("/edit_vendor", methods=["POST"])
 def edit_vendor():
     data = request.get_json()
-    vendor = vendor_service.edit_vendor(
-        data.get("vendor_id"), data.get("new_name"), data.get("new_services")
-    )
+    vendor_id = data.get("vendor_id")
+    new_name = data.get("new_name")
+    new_services = data.get("new_services")
+    if not vendor_id:
+        return jsonify({"error": "Missing vendor_id"}), 400
+    # Usa o método 'update'
+    vendor = vendor_service.update(vendor_id, new_name=new_name, new_services=new_services)
     if not vendor:
         return jsonify({"error": "Vendor not found"}), 404
     return jsonify({"message": "Vendor updated", "vendor": vendor})

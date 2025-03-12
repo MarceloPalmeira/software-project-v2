@@ -1,4 +1,3 @@
-# controllers/participant_controller.py
 from flask import Blueprint, request, jsonify
 from services.participant_service import ParticipantService
 
@@ -12,7 +11,8 @@ def register_participant():
     name = data.get("name")
     if not event_id or not name:
         return jsonify({"error": "Missing event_id or name"}), 400
-    participant = participant_service.register_participant(event_id, name)
+    # Usa o método 'create'
+    participant = participant_service.create(event_id, name)
     if not participant:
         return jsonify({"error": "Event not found"}), 404
     return jsonify({"message": "Participant registered", "participant": participant})
@@ -28,7 +28,12 @@ def get_attendees():
 @bp.route("/edit_participant", methods=["POST"])
 def edit_participant():
     data = request.get_json()
-    participant = participant_service.edit_participant(data.get("participant_id"), data.get("new_name"))
+    participant_id = data.get("participant_id")
+    new_name = data.get("new_name")
+    if not participant_id or not new_name:
+        return jsonify({"error": "Missing participant_id or new_name"}), 400
+    # Usa o método 'update'
+    participant = participant_service.update(participant_id, new_name)
     if not participant:
         return jsonify({"error": "Participant not found"}), 404
     return jsonify({"message": "Participant updated", "participant": participant})
