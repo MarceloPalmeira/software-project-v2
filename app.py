@@ -1,12 +1,11 @@
 from flask import Flask, request, jsonify
 from models.event import Event
 from database.db import SessionLocal
-
-# Import dos novos modelos
 from models.participant import Participant
 from models.speaker import Speaker
 from models.vendor import Vendor
 from models.feedback import Feedback
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -34,7 +33,19 @@ def create_event():
         if not name or not date:
             return jsonify({"error": "Missing required fields"}), 400
 
-        event = Event(name=name, date=date, budget=int(budget))
+        # Validação para garantir que a data seja válida
+        try:
+            date = datetime.strptime(date, "%d-%m-%Y").date()
+        except ValueError:
+            return jsonify({"error": "Date must be in DD-MM-YYYY format"}), 400
+
+        # Validação para garantir que o orçamento seja um número
+        try:
+            budget = int(budget)
+        except ValueError:
+            return jsonify({"error": "Budget must be a valid number"}), 400
+
+        event = Event(name=name, date=date, budget=budget)
         session.add(event)
         session.commit()
         session.refresh(event)
@@ -44,7 +55,6 @@ def create_event():
         return jsonify({"error": str(e)}), 500
     finally:
         session.close()
-
 @app.route("/edit_event", methods=["POST"])
 def edit_event():
     session = SessionLocal()

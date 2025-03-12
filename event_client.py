@@ -3,17 +3,71 @@ import requests
 BASE_URL = "http://127.0.0.1:5000"
 
 def create_event():
-    name = input("Event Name: ")
-    date = input("Event Date (DD-MM-YYYY): ")
-    budget = input("Initial Budget: ")
+    while True:
+        name = input("Event Name: ")
+        date = input("Event Date (DD-MM-YYYY): ")
+        budget = input("Initial Budget: ")
 
-    response = requests.post(f"{BASE_URL}/create_event", json={"name": name, "date": date, "budget": budget})
-    print(f"Status Code: {response.status_code}")
-    print(f"Raw Response: {response.text}")
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        response = requests.post(f"{BASE_URL}/create_event", json={"name": name, "date": date, "budget": budget})
+        print(f"Status Code: {response.status_code}")
+        print(f"Raw Response: {response.text}")
+        
+        if response.status_code != 201:
+            try:
+                error_message = response.json()
+                print(f"Error: {error_message['error']}")
+            except Exception as e:
+                print("Error: The response is not a valid JSON.", e)
+            if "Date must be in DD-MM-YYYY format" in response.text:
+                print("Please enter the date in the correct format (DD-MM-YYYY).")
+                continue
+            elif "Budget must be a valid number" in response.text:
+                print("Please enter a valid number for the budget.")
+                continue
+            else:
+                break
+        else:
+            try:
+                print(response.json())
+                break
+            except Exception as e:
+                print("Error: The response is not a valid JSON.", e)
+                break
+
+def update_budget():
+    while True:
+        event_id = input("Event ID: ")
+        amount = input("Amount to add to budget: ")
+
+        try:
+            int(event_id)
+            int(amount)
+        except ValueError:
+            print("Error: Invalid input. Please enter valid numeric values.")
+            continue
+
+        response = requests.post(f"{BASE_URL}/update_budget", json={"event_id": event_id, "amount": amount})
+        print(f"Status Code: {response.status_code}")
+        print(f"Raw Response: {response.text}")
+        
+        if response.status_code != 200:
+            try:
+                error_message = response.json()
+                print(f"Error: {error_message['error']}")
+            except Exception as e:
+                print("Error: The response is not a valid JSON.", e)
+            if "Amount must be a valid number" in response.text:
+                print("Please enter a valid amount for the budget increase.")
+                continue
+            else:
+                break
+        else:
+            try:
+                print(response.json())
+                break
+            except Exception as e:
+                print("Error: The response is not a valid JSON.", e)
+                break
 
 def get_events():
     response = requests.get(f"{BASE_URL}/events")
@@ -25,52 +79,85 @@ def get_events():
             for event in events:
                 print(f"ID: {event['id']} | Name: {event['name']} | Date: {event['date']} | Budget: {event['budget']}")
     except Exception as e:
-        print("Erro ao obter eventos:", e)
+        print("Error getting events:", e)
 
 def edit_event():
-    event_id = input("Event ID to edit: ")
-    new_name = input("New Event Name (leave blank to keep current): ")
-    new_date = input("New Event Date (DD-MM-YYYY, leave blank to keep current): ")
-    new_budget = input("New Budget (leave blank to keep current): ")
+    while True:
+        event_id = input("Event ID to edit: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+        
+        new_name = input("New Event Name (leave blank to keep current): ")
+        new_date = input("New Event Date (DD-MM-YYYY, leave blank to keep current): ")
+        new_budget = input("New Budget (leave blank to keep current): ")
 
-    payload = {"event_id": event_id}
-    if new_name.strip() != "":
-        payload["name"] = new_name
-    if new_date.strip() != "":
-        payload["date"] = new_date
-    if new_budget.strip() != "":
-        payload["budget"] = new_budget
+        payload = {"event_id": event_id}
+        if new_name.strip() != "":
+            payload["name"] = new_name
+        if new_date.strip() != "":
+            payload["date"] = new_date
+        if new_budget.strip() != "":
+            payload["budget"] = new_budget
 
-    response = requests.post(f"{BASE_URL}/edit_event", json=payload)
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        response = requests.post(f"{BASE_URL}/edit_event", json=payload)
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
+            break
 
 def delete_event():
-    event_id = input("Event ID to delete: ")
-    response = requests.post(f"{BASE_URL}/delete_event", json={"event_id": event_id})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID to delete: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+        
+        response = requests.post(f"{BASE_URL}/delete_event", json={"event_id": event_id})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def register_attendee():
-    event_id = input("Event ID: ")
-    name = input("Participant Name: ")
-    response = requests.post(f"{BASE_URL}/register_participant", json={"event_id": event_id, "name": name})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+        
+        name = input("Participant Name: ")
+        response = requests.post(f"{BASE_URL}/register_participant", json={"event_id": event_id, "name": name})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def get_attendees():
-    event_id = input("Event ID: ")
-    response = requests.get(f"{BASE_URL}/attendees", params={"event_id": event_id})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+        
+        response = requests.get(f"{BASE_URL}/attendees", params={"event_id": event_id})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def edit_participant():
     participant_id = input("Participant ID: ")
@@ -83,25 +170,41 @@ def edit_participant():
     try:
         print(response.json())
     except Exception as e:
-        print("Erro ao decodificar a resposta:", e)
+        print("Error decoding the response:", e)
 
 def register_speaker():
-    event_id = input("Event ID: ")
-    name = input("Speaker Name: ")
-    description = input("Description: ")
-    response = requests.post(f"{BASE_URL}/register_speaker", json={"event_id": event_id, "name": name, "description": description})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+
+        name = input("Speaker Name: ")
+        description = input("Description: ")
+        response = requests.post(f"{BASE_URL}/register_speaker", json={"event_id": event_id, "name": name, "description": description})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def list_speakers():
-    event_id = input("Event ID: ")
-    response = requests.get(f"{BASE_URL}/list_speakers", params={"event_id": event_id})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+
+        response = requests.get(f"{BASE_URL}/list_speakers", params={"event_id": event_id})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def edit_speaker():
     speaker_id = input("Speaker ID: ")
@@ -117,25 +220,41 @@ def edit_speaker():
     try:
         print(response.json())
     except Exception as e:
-        print("Erro ao decodificar a resposta:", e)
+        print("Error decoding the response:", e)
 
 def register_vendor():
-    event_id = input("Event ID: ")
-    name = input("Vendor Name: ")
-    services = input("Offered Services: ")
-    response = requests.post(f"{BASE_URL}/register_vendor", json={"event_id": event_id, "name": name, "services": services})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+
+        name = input("Vendor Name: ")
+        services = input("Offered Services: ")
+        response = requests.post(f"{BASE_URL}/register_vendor", json={"event_id": event_id, "name": name, "services": services})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def list_vendors():
-    event_id = input("Event ID: ")
-    response = requests.get(f"{BASE_URL}/list_vendors", params={"event_id": event_id})
-    try:
-        print(response.json())
-    except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+    while True:
+        event_id = input("Event ID: ")
+        try:
+            int(event_id)
+        except ValueError:
+            print("Error: Invalid event ID. Please enter a valid numeric ID.")
+            continue
+
+        response = requests.get(f"{BASE_URL}/list_vendors", params={"event_id": event_id})
+        try:
+            print(response.json())
+            break
+        except Exception as e:
+            print("Error: The response is not a valid JSON.", e)
 
 def edit_vendor():
     vendor_id = input("Vendor ID: ")
@@ -151,42 +270,72 @@ def edit_vendor():
     try:
         print(response.json())
     except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        print("Error: The response is not a valid JSON.", e)
 
 def update_budget():
     event_id = input("Event ID: ")
     amount = input("Amount to add to budget: ")
+
+    try:
+        int(event_id)
+        int(amount)
+    except ValueError:
+        print("Error: Invalid input. Please enter valid numeric values.")
+        return
+
     response = requests.post(f"{BASE_URL}/update_budget", json={"event_id": event_id, "amount": amount})
     try:
         print(response.json())
     except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        print("Error: The response is not a valid JSON.", e)
 
 def get_budget():
     event_id = input("Event ID: ")
+
+    try:
+        int(event_id)
+    except ValueError:
+        print("Error: Invalid event ID. Please enter a valid numeric ID.")
+        return
+
     response = requests.get(f"{BASE_URL}/get_budget", params={"event_id": event_id})
     try:
         print(response.json())
     except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        print("Error: The response is not a valid JSON.", e)
 
 def edit_budget():
     event_id = input("Event ID: ")
     new_budget = input("New Budget: ")
+
+    try:
+        int(event_id)
+        int(new_budget)
+    except ValueError:
+        print("Error: Invalid input. Please enter valid numeric values.")
+        return
+
     response = requests.post(f"{BASE_URL}/edit_budget", json={"event_id": event_id, "new_budget": new_budget})
     try:
         print(response.json())
     except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        print("Error: The response is not a valid JSON.", e)
 
 def add_feedback():
     event_id = input("Event ID: ")
     feedback = input("Enter your feedback: ")
+
+    try:
+        int(event_id)
+    except ValueError:
+        print("Error: Invalid event ID. Please enter a valid numeric ID.")
+        return
+
     response = requests.post(f"{BASE_URL}/add_feedback", json={"event_id": event_id, "feedback": feedback})
     try:
         print(response.json())
     except Exception as e:
-        print("Erro: A resposta não é um JSON válido.", e)
+        print("Error: The response is not a valid JSON.", e)
 
 def main():
     while True:
