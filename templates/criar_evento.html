@@ -1,0 +1,25 @@
+<!-- templates/criar_evento.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Evento</title>
+</head>
+<body>
+  <h1>Criar Novo Evento</h1>
+  <form method="POST">
+    <label for="nome">Nome do Evento:</label>
+    <input type="text" name="nome" id="nome" required>
+    <br>
+    <label for="data">Data (DD-MM-AAAA):</label>
+    <input type="text" name="data" id="data" required>
+    <br>
+    <label for="orcamento">Orçamento Inicial:</label>
+    <input type="number" name="orcamento" id="orcamento" required>
+    <br>
+    <button type="submit">Criar Evento</button>
+  </form>
+  <a href="{{ url_for('index') }}">Voltar</a>
+</body>
+</html>

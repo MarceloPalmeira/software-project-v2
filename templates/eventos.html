@@ -1,0 +1,22 @@
+<!-- templates/eventos.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eventos Cadastrados</title>
+</head>
+<body>
+  <h1>Lista de Eventos</h1>
+  <ul>
+    {% for evento in eventos %}
+      <li>
+        {{ evento.name }} - {{ evento.date }} - Orçamento: {{ evento.budget }}
+        <a href="{{ url_for('editar_evento', event_id=evento.id) }}">Editar</a>
+        <a href="{{ url_for('excluir_evento', event_id=evento.id) }}">Excluir</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <a href="{{ url_for('index') }}">Voltar</a>
+</body>
+</html>
