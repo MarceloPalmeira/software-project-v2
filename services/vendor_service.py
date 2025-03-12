@@ -1,4 +1,3 @@
-# services/vendor_service.py
 from database.db import SessionLocal
 from models.vendor import Vendor
 from models.event import Event

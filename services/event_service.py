@@ -1,4 +1,3 @@
-# services/event_service.py
 from database.db import SessionLocal
 from models.event import Event
 from datetime import datetime
@@ -8,7 +7,6 @@ class EventService(BaseService):
     def create(self, name, date, budget):
         session = SessionLocal()
         try:
-            # Aqui, 'date' já deve ser uma data (ou string formatada conforme seu model)
             event = Event(name=name, date=date, budget=budget)
             session.add(event)
             session.commit()
@@ -29,7 +27,6 @@ class EventService(BaseService):
             if "name" in data:
                 event.name = data["name"]
             if "date" in data:
-                # Se a data vier como string, você pode converter:
                 event.date = datetime.strptime(data["date"], "%d-%m-%Y").date()
             if "budget" in data:
                 event.budget = int(data["budget"])
@@ -56,7 +53,7 @@ class EventService(BaseService):
         finally:
             session.close()
 
-    # Outros métodos específicos que não fazem parte do contrato abstrato:
+    # Métodos adicionais que não fazem parte do contrato abstrato, mas podem ser usados normalmente:
     def list_events(self):
         session = SessionLocal()
         try:

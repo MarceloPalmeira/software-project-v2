@@ -1,4 +1,3 @@
-# services/participant_service.py
 from database.db import SessionLocal
 from models.participant import Participant
 from models.event import Event
@@ -52,7 +51,7 @@ class ParticipantService(BaseService):
         finally:
             session.close()
     
-    # Método adicional específico para obter participantes de um evento:
+    # Método adicional para obter participantes de um evento:
     def get_attendees(self, event_id):
         session = SessionLocal()
         try:

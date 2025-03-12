@@ -1,4 +1,3 @@
-# services/speaker_service.py
 from database.db import SessionLocal
 from models.speaker import Speaker
 from models.event import Event

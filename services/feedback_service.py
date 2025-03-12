@@ -1,4 +1,3 @@
-# services/feedback_service.py
 from database.db import SessionLocal
 from models.feedback import Feedback
 from models.event import Event
