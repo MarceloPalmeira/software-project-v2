@@ -7,7 +7,7 @@ class Feedback(Base):
     __tablename__ = "feedbacks"
 
     id = Column(Integer, primary_key=True, index=True)
-    content = Column(String, nullable=False)
+    _content = Column("content", String, nullable=False)
     event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
 
     event = relationship("Event", back_populates="feedbacks")
@@ -15,6 +15,16 @@ class Feedback(Base):
     def __init__(self, content, event_id):
         self.content = content
         self.event_id = event_id
+
+    @property
+    def content(self):
+        return self._content
+
+    @content.setter
+    def content(self, value):
+        if not value:
+            raise ValueError("O conteúdo do feedback não pode ser vazio.")
+        self._content = value
 
     def to_dict(self):
         return {

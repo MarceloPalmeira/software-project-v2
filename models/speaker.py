@@ -7,8 +7,8 @@ class Speaker(Base):
     __tablename__ = "speakers"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    description = Column(String, nullable=True)
+    _name = Column("name", String, nullable=False)
+    _description = Column("description", String, nullable=True)
     event_id = Column(Integer, ForeignKey("events.id"), nullable=False)
 
     event = relationship("Event", back_populates="speakers")
@@ -17,6 +17,24 @@ class Speaker(Base):
         self.name = name
         self.description = description
         self.event_id = event_id
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        if not value:
+            raise ValueError("O nome do palestrante não pode ser vazio.")
+        self._name = value
+
+    @property
+    def description(self):
+        return self._description
+
+    @description.setter
+    def description(self, value):
+        self._description = value  # Pode adicionar validações se necessário
 
     def to_dict(self):
         return {
