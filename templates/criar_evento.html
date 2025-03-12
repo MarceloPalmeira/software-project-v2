@@ -1,4 +1,3 @@
-<!-- templates/criar_evento.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -19,8 +18,10 @@
     <label for="orcamento">Orçamento Inicial:</label>
     <input type="number" name="orcamento" id="orcamento" required>
     <br>
-    <button type="submit">Criar Evento</button>
+    <div class="form-buttons">
+      <button type="submit">Criar Evento</button>
+      <a href="{{ url_for('index') }}" class="btn">Voltar</a>
+    </div>
   </form>
-  <a href="{{ url_for('index') }}">Voltar</a>
 </body>
 </html>

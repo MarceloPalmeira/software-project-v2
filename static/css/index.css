@@ -31,7 +31,7 @@
   }
   
   nav ul li {
-    display: inline-block;
+    display: grid;
     margin: 0 10px;
   }
   

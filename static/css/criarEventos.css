@@ -149,3 +149,28 @@
     width: 100%;
   }
   
+  /* Container para os botões */
+.form-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+}
+
+/* Estilo para links que se comportam como botão */
+.btn {
+  display: inline-block;
+  text-align: center;
+  padding: 10px 15px;
+  background-color: #007BFF;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
