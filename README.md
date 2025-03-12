@@ -35,6 +35,22 @@ This project is an event management system that allows you to create, edit, list
 - **View Budget:** Retrieve the current budget for an event.
 - **Edit Budget:** Overwrite the event’s budget with a new value, retaining the original if no new value is provided.
 
+## Checklist of Implemented and Missing Features
+
+### Implemented Features
+- ✅ **Event Creation and Management:** Users can create, edit, list, and delete event details.
+- ✅ **Attendee Registration:** Participants can be registered and listed for events.
+- ✅ **Speaker & Performer Management:** Speakers/Performers can be registered, listed, and edited.
+- ✅ **Vendor Management:** Vendors can be registered, listed, and edited.
+- ✅ **Feedback & Surveys:** Attendees can submit feedback for events.
+- ✅ **Budget & Financial Management:** Users can update, view, and edit event budgets.
+- ✅ **Schedule and Agenda Management:** Event creation includes scheduling via dates.
+
+### Missing Features
+- ❌ **Venue Booking:** Not implemented because it would require using a real booking platform like Airbnb, which is not ideal for an academic project.
+- ❌ **Social Media Integration:** Not implemented due to lack of time.
+- ❌ **Email and Notification System:** Not implemented due to lack of time.
+
 ---
 
 ## Technologies Used
