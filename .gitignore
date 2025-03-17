@@ -4,7 +4,6 @@ __pycache__/
 *.pyo
 
 # Ignorar banco de dados SQLite (caso tenha usado)
-*.db
 *.sqlite3
 
 # Ignorar configurações de ambiente do Python (Virtualenv)

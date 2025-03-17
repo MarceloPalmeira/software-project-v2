@@ -43,3 +43,6 @@ class Speaker(Base):
             "description": self.description,
             "event_id": self.event_id
         }
+
+
+3
