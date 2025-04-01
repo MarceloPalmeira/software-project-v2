@@ -2,6 +2,7 @@
 
 This project is an event management system that allows you to create, edit, list, and delete events, as well as manage participants, speakers, vendors, feedback, and budgets. The application includes a REST API built with Flask, a web front-end using Jinja2 templates (with modular CSS files for each component), and a terminal-based client for direct interaction.
 
+**Run create_table.py to create the database structure and remember to configure db.py**
 ---
 
 ## Features
